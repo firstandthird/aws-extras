@@ -1,0 +1,135 @@
+#!/bin/bash
+
+source lib/prompt.sh
+
+prompt "User" "" "AWS_USER"
+prompt "Bucket" "" "S3_BUCKET"
+prompt "Region" "us-east-1" "AWS_REGION"
+prompt "Web (y/n)" "n" "S3_WEB"
+prompt "Public (y/n)" "n" "S3_PUBLIC"
+
+create_bucket() {
+  local bucket=$1
+  local region=$2
+  aws s3 ls s3://$bucket 2>&1
+  if [[ "$?" != 0 ]]; then
+    echo "creating bucket $bucket"
+    aws s3api create-bucket --bucket $bucket --region $region
+  else
+    echo "$bucket already exists"
+  fi
+
+}
+
+create_user() {
+  local user=$1
+  aws iam get-user --user-name $user 2>&1
+  if [[ "$?" != 0 ]]; then
+    echo "creating user: $user"
+    aws iam create-user --user-name $user
+    aws iam create-access-key --user-name $user
+  fi
+}
+
+bucket_public() {
+  local bucket=$1
+
+  local file=/tmp/s3-public-policy
+  cat > $file <<- EOM
+{
+  "Version": "2012-10-17",
+  "Statement": [
+  {
+    "Sid": "AddPerm",
+    "Effect": "Allow",
+    "Principal": "*",
+    "Action": [
+    "s3:GetObject"
+    ],
+    "Resource": [
+    "arn:aws:s3:::$bucket/*"
+    ]
+  }
+  ]
+}
+EOM
+  echo "making bucket public for $bucket"
+  aws s3api put-bucket-policy --bucket $bucket --policy file://$file
+}
+
+bucket_website() {
+  local bucket=$1
+
+  local file=/tmp/s3-website
+  cat > $file <<- EOM
+{
+    "IndexDocument": {
+        "Suffix": "index.html"
+    },
+    "ErrorDocument": {
+        "Key": "error.html"
+    }
+}
+EOM
+  echo "making website bucket for $bucket"
+  aws s3api put-bucket-website --bucket $bucket --website-configuration file://$file
+}
+
+user_policy() {
+  local user=$1
+  local bucket=$2
+
+  local policyname=s3-$bucket
+  local file=/tmp/s3-policy
+  cat > $file <<- EOM
+{
+  "Version":"2012-10-17",
+  "Statement":[
+  {
+    "Effect":"Allow",
+    "Action":[
+    "s3:ListBucket",
+    "s3:GetBucketLocation"
+    ],
+    "Resource":"arn:aws:s3:::$bucket"
+  },
+  {
+    "Effect":"Allow",
+    "Action":[
+    "s3:PutObject",
+    "s3:PutObjectAcl",
+    "s3:GetObjectAcl",
+    "s3:GetObject",
+    "s3:DeleteObject"
+    ],
+    "Resource":"arn:aws:s3:::$bucket/*"
+  }
+  ]
+}
+EOM
+
+  aws iam get-user-policy --user-name $user --policy-name $policyname 2>&1
+  if [[ "$?" != 0 ]]; then
+    echo "adding user policy for $user"
+    aws iam put-user-policy --user-name $user --policy-name $policyname --policy-document file://$file
+  fi
+
+}
+
+
+create_bucket $S3_BUCKET $AWS_REGION
+if [[ "$?" != 0 ]]; then
+  echo "error creating bucket"
+  exit 1
+fi
+
+if [[ "$public" == "y" ]]; then
+  bucket_public $S3_BUCKET
+fi
+
+if [[ "$web" == "y" ]]; then
+  bucket_website $S3_BUCKET
+fi
+
+create_user $AWS_USER
+user_policy $AWS_USER $S3_BUCKET
