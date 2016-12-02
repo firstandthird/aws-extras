@@ -1,0 +1,7 @@
+#!/bin/bash
+
+NAME=$1
+
+OUT=$(aws ec2 create-key-pair --key-name $NAME | jq -r ".KeyMaterial")
+
+echo $OUT > $NAME.pem

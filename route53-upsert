@@ -1,0 +1,37 @@
+#!/bin/bash
+
+
+source lib/prompt.sh
+
+prompt "Zone ID" "" "ZONE_ID"
+prompt "Host" "" "HOST"
+prompt "Type" "CNAME" "RECORD_TYPE"
+prompt "Value" "" "RECORD_VALUE"
+
+FILE=/tmp/route53-upsert
+cat > $FILE <<- EOM
+{
+  "Comment": "updated from server-scripts",
+  "Changes": [
+    {
+      "Action": "UPSERT",
+      "ResourceRecordSet": {
+        "Name": "$HOST",
+        "Type": "$RECORD_TYPE",
+        "TTL": 300,
+        "ResourceRecords": [
+          {
+            "Value": "$RECORD_VALUE"
+          }
+        ]
+      }
+    }
+  ]
+}
+EOM
+
+aws route53 change-resource-record-sets --hosted-zone-id $ZONE_ID --change-batch file://$FILE
+
+
+
+

@@ -1,0 +1,19 @@
+#!/bin/bash
+
+NAME=$1
+
+if [[ -z "$NAME" ]]; then
+  echo "must pass in server name"
+fi
+
+
+INSTANCE_ID=$(bash server/ec2-instance-id $NAME)
+
+
+echo "Are you sure you want to terminate $NAME? [y/n]"
+read response
+
+if [[ "$response" == "y" ]]; then
+  echo "Terminating..."
+  aws ec2 terminate-instances --instance-id $INSTANCE_ID
+fi

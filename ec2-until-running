@@ -1,0 +1,10 @@
+#!/bin/bash
+
+INSTANCE_ID=$1
+STATUS=""
+while [ "$STATUS" != "running" ]; do
+  STATUS=$(aws ec2 describe-instance-status --instance-id $INSTANCE_ID | jq -r ".InstanceStatuses[0].InstanceState.Name")
+  if [[ "$STATUS" != "running" ]]; then
+    sleep 5
+  fi
+done
