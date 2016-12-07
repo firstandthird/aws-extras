@@ -9,7 +9,7 @@ if [[ -z "$NAME" ]]; then
 fi
 
 
-INSTANCE_ID=$(bash $DIR/ec2-instance-id $NAME)
+INSTANCE_ID=$(bash $DIR/aws-ec2-instance-id $NAME)
 
 
 echo "Are you sure you want to terminate $NAME? [y/n]"
