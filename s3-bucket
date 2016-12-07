@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source lib/prompt.sh
+source $(dirname $0)/lib/prompt.sh
 
 prompt "User" "" "AWS_USER"
 prompt "Bucket" "" "S3_BUCKET"

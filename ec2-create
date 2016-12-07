@@ -1,6 +1,7 @@
 #!/bin/bash
 
-source lib/prompt.sh
+DIR=$(dirname $0)
+source $DIR/lib/prompt.sh
 
 prompt "Name" "" "SERVER_NAME"
 prompt "Instance Type" t2.medium "INSTANCE_TYPE"
@@ -11,6 +12,7 @@ prompt "Image AMI" "ami-40d28157" "SERVER_IMAGE"
 prompt "Security Groups" "" "SECURITY_GROUPS"
 prompt "Subnet" "" "SUBNET"
 
+echo "Creating instance..."
 
 OUTPUT=$(aws ec2 run-instances \
   --key-name $KEY_NAME \
@@ -28,12 +30,13 @@ fi
 
 INSTANCE_ID=$(echo $OUTPUT | jq -r ".Instances[0].InstanceId")
 
-echo $OUTPUT
-echo $INSTANCE_ID
+echo "Tagging instance"
 
 aws ec2 create-tags --resources $INSTANCE_ID --tags "Key=Name,Value=$SERVER_NAME"
 
-bash aws/ec2-until-running $INSTANCE_ID
+echo "Waiting until running..."
+
+bash $DIR/ec2-until-running $INSTANCE_ID
 
 echo "Instance $INSTANCE_ID is now running"
-bash aws/ec2-dns $SERVER_NAME
+bash $DIR/ec2-dns $SERVER_NAME

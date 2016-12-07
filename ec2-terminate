@@ -1,13 +1,15 @@
 #!/bin/bash
 
 NAME=$1
+DIR=$(dirname $0)
 
 if [[ -z "$NAME" ]]; then
   echo "must pass in server name"
+  exit 1
 fi
 
 
-INSTANCE_ID=$(bash server/ec2-instance-id $NAME)
+INSTANCE_ID=$(bash $DIR/ec2-instance-id $NAME)
 
 
 echo "Are you sure you want to terminate $NAME? [y/n]"

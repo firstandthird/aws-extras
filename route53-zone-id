@@ -1,0 +1,4 @@
+#!/bin/bash
+
+DOMAIN=$1
+aws route53 list-hosted-zones-by-name --dns-name $DOMAIN

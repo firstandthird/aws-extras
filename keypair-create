@@ -1,0 +1,14 @@
+#!/bin/bash
+
+
+source $(dirname $0)/lib/prompt.sh
+
+prompt "Keypair Name" "" "NAME"
+
+RES=$(aws ec2 create-key-pair --key-name $NAME)
+
+echo $RES
+
+OUT=$(echo $RES | jq -r ".KeyMaterial")
+
+echo $OUT > $NAME.pem

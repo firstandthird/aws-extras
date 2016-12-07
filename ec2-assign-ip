@@ -5,4 +5,4 @@ NAME=$1
 INSTANCE_ID=$(bash aws/ec2-instance-id $NAME)
 ALLOCATION_ID=$(aws ec2 allocate-address --domain vpc | jq -r ".AllocationId")
 aws ec2 associate-address --instance-id $INSTANCE_ID --allocation-id $ALLOCATION_ID
-bash aws/ec2-ip $NAME
+bash $(dirname $0)/ec2-ip $NAME
