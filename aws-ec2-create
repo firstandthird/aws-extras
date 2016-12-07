@@ -5,12 +5,18 @@ source $DIR/lib/prompt.sh
 
 prompt "Name" "" "SERVER_NAME"
 prompt "Instance Type" t2.medium "INSTANCE_TYPE"
+bash $DIR/aws-keypair-list
 prompt "Key Name" "" "KEY_NAME"
 prompt "Size" 50 "SERVER_SIZE"
 prompt "Region" us-east-1 "AWS_REGION"
+echo "Ubuntu us-east-1: ami-40d28157"
+echo "Ubuntu us-west-2: ami-a9d276c9"
 prompt "Image AMI" "ami-40d28157" "SERVER_IMAGE"
-prompt "Security Groups" "" "SECURITY_GROUPS"
-prompt "Subnet" "" "SUBNET"
+bash $DIR/aws-vpcs
+bash $DIR/aws-security-groups
+prompt "Security Group ID" "" "SECURITY_GROUPS"
+bash $DIR/aws-subnets
+prompt "Subnet ID" "" "SUBNET"
 
 echo "Creating instance..."
 
