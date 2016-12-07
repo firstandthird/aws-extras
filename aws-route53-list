@@ -1,3 +1,12 @@
 #!/bin/bash
 
-aws route53 list-resource-record-sets --hosted-zone-id $1 --output table
+DOMAIN=$1
+DIR=$(dirname $0)
+
+if [[ -z "$DOMAIN" ]]; then
+  source ${DIR}/lib/prompt.sh
+  prompt "Domain" "" "DOMAIN"
+fi
+
+ZONEID=$($DIR/aws-route53-zone-id $DOMAIN)
+aws route53 list-resource-record-sets --hosted-zone-id $ZONEID --output table

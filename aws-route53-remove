@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 DIR=$(dirname $0)
 source $DIR/lib/prompt.sh
 
@@ -21,7 +20,7 @@ cat > $FILE <<- EOM
   "Comment": "updated from server-scripts",
   "Changes": [
     {
-      "Action": "UPSERT",
+      "Action": "DELETE",
       "ResourceRecordSet": {
         "Name": "$HOST",
         "Type": "$RECORD_TYPE",
