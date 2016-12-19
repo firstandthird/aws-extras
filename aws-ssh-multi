@@ -1,0 +1,15 @@
+#!/bin/bash
+
+
+DIR=$(dirname $0)
+source $DIR/lib/prompt.sh
+
+bash $DIR/aws-ec2-list
+prompt "Servers (comma separated)" "" "SERVERS_STR"
+prompt "Command" "" "CMD"
+
+SERVERS=(${SERVERS_STR//,/ })
+for i in "${!SERVERS[@]}"; do
+  echo "running $CMD on ${SERVERS[i]}..."
+  bash $DIR/aws-ssh ${SERVERS[i]} "$CMD"
+done
