@@ -9,4 +9,8 @@ if [[ -z "$DOMAIN" ]]; then
 fi
 
 ZONEID=$($DIR/aws-route53-zone-id $DOMAIN)
-aws route53 list-resource-record-sets --hosted-zone-id $ZONEID --output table
+aws route53 list-resource-record-sets \
+  --query 'ResourceRecordSets[].{ Type:Type, Name:Name, TTL:TTL, Records:ResourceRecords[] | [0].Value || `<Alias>`}' \
+  --hosted-zone-id $ZONEID \
+  --output table
+
