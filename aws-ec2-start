@@ -1,0 +1,16 @@
+#!/bin/bash
+
+DIR=$(dirname $0)
+source $DIR/lib/prompt.sh
+
+SERVER=$1
+CMD=$2
+if [[ -z "$1" ]]; then
+  bash $DIR/aws-ec2-list
+fi
+
+prompt "Server Name" "" "SERVER"
+
+ID=$(aws ec2 describe-instances --filters Name=tag:Name,Values="$SERVER" --query 'Reservations[].Instances[].InstanceId' --output text)
+
+aws ec2 start-instances --instance-id $ID
