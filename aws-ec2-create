@@ -17,6 +17,10 @@ bash $DIR/aws-security-groups
 prompt "Security Group ID" "" "SECURITY_GROUPS"
 bash $DIR/aws-subnets
 prompt "Subnet ID" "" "SUBNET"
+prompt "Detailed Monitoring (0/1)" "1" "MONITORING"
+if [[ "$MONITORING" == "0" ]]; then
+  MONITORING=""
+fi
 
 echo "Creating instance..."
 
@@ -27,7 +31,8 @@ OUTPUT=$(aws ec2 run-instances \
   --security-group-ids $SECURITY_GROUPS \
   --subnet-id $SUBNET \
   --associate-public-ip-address \
-  --block-device-mapping "[ { \"DeviceName\": \"/dev/sda1\", \"Ebs\": { \"VolumeSize\": $SERVER_SIZE } } ]")
+  --block-device-mapping "[ { \"DeviceName\": \"/dev/sda1\", \"Ebs\": { \"VolumeSize\": $SERVER_SIZE } } ]") \
+  ${MONITORING:+ --monitoring Enabled=true}
 
 if [[ $? -ne 0 ]]; then
   echo $OUTPUT
