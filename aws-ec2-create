@@ -31,8 +31,8 @@ OUTPUT=$(aws ec2 run-instances \
   --security-group-ids $SECURITY_GROUPS \
   --subnet-id $SUBNET \
   --associate-public-ip-address \
-  --block-device-mapping "[ { \"DeviceName\": \"/dev/sda1\", \"Ebs\": { \"VolumeSize\": $SERVER_SIZE } } ]") \
-  ${MONITORING:+ --monitoring Enabled=true}
+  --block-device-mapping "[ { \"DeviceName\": \"/dev/sda1\", \"Ebs\": { \"VolumeSize\": $SERVER_SIZE } } ]" \
+  ${MONITORING:+ --monitoring Enabled=true})
 
 if [[ $? -ne 0 ]]; then
   echo $OUTPUT
