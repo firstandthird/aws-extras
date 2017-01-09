@@ -4,8 +4,9 @@ DIR=$(dirname $0)
 source $DIR/lib/prompt.sh
 
 SERVER=$1
-CMD=$2
-if [[ -z "$1" ]]; then
+shift
+CMD=$@
+if [[ -z "$SERVER" ]]; then
   bash $DIR/aws-ec2-list
 fi
 

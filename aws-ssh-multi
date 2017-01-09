@@ -4,7 +4,14 @@
 DIR=$(dirname $0)
 source $DIR/lib/prompt.sh
 
-bash $DIR/aws-ec2-list
+SERVERS_STR=$1
+shift
+CMD=$@
+
+if [[ -z "$SERVER_STR" ]]; then
+  bash $DIR/aws-ec2-list
+fi
+
 prompt "Servers (comma separated)" "" "SERVERS_STR"
 prompt "Command" "" "CMD"
 
