@@ -1,0 +1,20 @@
+#!/bin/bash
+
+DIR=$(dirname $0)
+source $DIR/lib/prompt.sh
+
+SERVER=$1
+SOURCE=$2
+TARGET=$3
+
+if [[ -z "$SERVER" ]]; then
+  bash $DIR/aws-ec2-list
+fi
+
+prompt "Server" "" "SERVER"
+prompt "Source" "" "SOURCE"
+prompt "Target" "" "TARGET"
+
+HOST=$(aws ec2 describe-instances --filters Name=tag:Name,Values="$SERVER" --query 'Reservations[].Instances[].PublicDnsName' --output text)
+
+scp ubuntu@$HOST:$SOURCE $TARGET
