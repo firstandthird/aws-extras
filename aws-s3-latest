@@ -1,0 +1,13 @@
+#!/bin/bash
+
+DIR=$(dirname $0)
+source $DIR/lib/prompt.sh
+BUCKET=$1
+
+if [[ -z "$BUCKET" ]]; then
+  aws s3 ls
+  prompt "Bucket" "" "BUCKET"
+fi
+
+KEY=$(aws s3 ls $BUCKET --recursive | sort | tail -n 1 | awk '{print $4}')
+aws s3 cp s3://$BUCKET/$KEY .
