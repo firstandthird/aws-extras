@@ -14,7 +14,7 @@ prompt "Host" "" "HOST"
 prompt "Type" "CNAME" "RECORD_TYPE"
 prompt "Value" "" "RECORD_VALUE"
 
-FILE=/tmp/route53-upsert
+FILE=$TMPDIR/route53-upsert
 cat > $FILE <<- EOM
 {
   "Comment": "updated from server-scripts",
