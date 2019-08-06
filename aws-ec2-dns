@@ -6,4 +6,4 @@ if [[ -z "$NAME" ]]; then
   echo "must pass in server name"
 fi
 
-aws ec2 describe-instances --filters Name=tag:Name,Values="$NAME" --query "Reservations[].Instances[].PublicDnsName" --output text
+aws ec2 describe-instances --filters Name=tag:Name,Values="$NAME" Name=instance-state-name,Values=running --query "Reservations[].Instances[].PublicDnsName" --output text
