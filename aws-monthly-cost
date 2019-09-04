@@ -1,0 +1,10 @@
+#!/bin/bash
+
+START=$(date +%Y-%m-01 -d "6 months ago")
+END=$(date +%Y-%m-%d -d "now")
+aws ce get-cost-and-usage \
+  --time-period Start=$START,End=$END \
+  --granularity MONTHLY \
+  --metrics "BlendedCost" \
+  --query 'ResultsByTime[*].{ Start:TimePeriod.Start, Total:Total.BlendedCost.Amount }' \
+  --output table

@@ -1,0 +1,11 @@
+#!/bin/bash
+
+START=$(date +%Y-%m-%d -d "10 days ago")
+END=$(date +%Y-%m-%d -d "now")
+aws ce get-cost-and-usage \
+  --time-period Start=$START,End=$END \
+  --granularity DAILY \
+  --metrics "BlendedCost" \
+  --group-by Type=DIMENSION,Key=SERVICE \
+  --query 'ResultsByTime[*].{ Start:TimePeriod.Start, Groups:Groups[].{ Service:Keys[0], Cost:Metrics.BlendedCost.Amount }}' \
+  --output table
