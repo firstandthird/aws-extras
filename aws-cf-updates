@@ -1,0 +1,10 @@
+#!/bin/bash
+
+STACK=$1
+
+aws cloudformation describe-stack-events --stack-name $STACK \
+  --query 'StackEvents[].{ ResourceId:LogicalResourceId, Status:ResourceStatus, Reason:ResourceStatusReason}' \
+  --max-items 10 \
+  --output table
+
+
