@@ -1,5 +1,5 @@
 #!/bin/bash
 
 aws lambda list-functions \
-  --query 'Functions[].{ Name:FunctionName,Timeout:Timeout,Runtime:Runtime,MemorySize:MemorySize,Description:Description,Size:CodeSize }' \
+  --query 'sort_by(Functions[].{ Name:FunctionName,Timeout:Timeout,Runtime:Runtime,MemorySize:MemorySize,Description:Description,Size:CodeSize }, &Name)' \
   --output table
