@@ -16,7 +16,7 @@ get_loglines() {
       ${3:+ --filter-pattern "${3}"} \
       --start-time $2 \
       --query "events[].{ Message:message }" \
-      --output table
+      --output text
 }
 
 # Usage: get_next_start_time <prev-start-time> "<loglines>"
@@ -35,7 +35,6 @@ while [[ -n "$start_time" ]]; do
   [ $? -ne 0 ] && break
   echo "$loglines"
   new_start_time=$( get_next_start_time $start_time "$loglines" )
-  echo $new_start_time
   if [[ "$start_time" == "$new_start_time" ]]; then
     break;
   fi
