@@ -1,5 +1,5 @@
 #!/bin/bash
 
 aws logs describe-log-groups \
-  --query "sort_by(logGroups[].{ Name:logGroupName,Size:storedBytes }, &Name)" \
+  --query "sort_by(logGroups[].{ Name:logGroupName,Size:storedBytes,Retention:retentionInDays }, &Name)" \
   --output table
