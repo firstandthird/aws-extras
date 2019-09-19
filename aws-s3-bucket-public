@@ -1,0 +1,29 @@
+#!/bin/bash
+
+bucket_public() {
+  local bucket=$1
+
+  local file=/tmp/s3-public-policy
+  cat > $file <<- EOM
+{
+  "Version": "2012-10-17",
+  "Statement": [
+  {
+    "Sid": "AddPerm",
+    "Effect": "Allow",
+    "Principal": "*",
+    "Action": [
+    "s3:GetObject"
+    ],
+    "Resource": [
+    "arn:aws:s3:::$bucket/*"
+    ]
+  }
+  ]
+}
+EOM
+  echo "making bucket public for $bucket"
+  aws s3api put-bucket-policy --bucket $bucket --policy file://$file
+}
+
+bucket_public $1
