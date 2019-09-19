@@ -1,10 +1,13 @@
 #!/bin/bash
 
 STACK=$1
-
+MAX=$2
+if [[ -z "$MAX" ]]; then
+  MAX=20
+fi
 aws cloudformation describe-stack-events --stack-name $STACK \
   --query 'StackEvents[].{ ResourceId:LogicalResourceId, Status:ResourceStatus, Reason:ResourceStatusReason}' \
-  --max-items 20 \
+  --max-items $MAX \
   --output table
 
 
