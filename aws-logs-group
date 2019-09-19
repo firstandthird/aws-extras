@@ -2,17 +2,21 @@
 
 group_name=$1
 start_mins_ago=$2
-if [[ -z "$start_seconds_ago" ]]; then
+filter=$3
+if [[ -z "$start_mins_ago" ]]; then
   start_mins_ago=5
 fi
 aws_cmd_opts= # e.g. "--profile <profile-name>"
 
 # Usage: get_loglines "<log-group-name>" <start-time>
 get_loglines() {
-  aws $aws_cmd_opts --output text logs filter-log-events \
+  aws $aws_cmd_opts logs filter-log-events \
       --log-group-name "$1" \
       --interleaved \
-      --start-time $2
+      ${3:+ --filter-pattern "${3}"} \
+      --start-time $2 \
+      --query "events[].{ Message:message }" \
+      --output table
 }
 
 # Usage: get_next_start_time <prev-start-time> "<loglines>"
@@ -26,12 +30,15 @@ get_next_start_time() {
 }
 
 start_time=$(( ( $(date -u +"%s") - ($start_mins_ago * 60) ) * 1000 ))
-echo $start_time
-#while [[ -n "$start_time" ]]; do
-loglines=$( get_loglines "$group_name" $start_time )
-  #[ $? -ne 0 ] && break
-  #start_time=$( get_next_start_time $start_time "$loglines" )
-echo "$loglines"
-  #read -p "Press enter to continue"
-#done
+while [[ -n "$start_time" ]]; do
+  loglines=$( get_loglines "$group_name" $start_time "$filter" )
+  [ $? -ne 0 ] && break
+  echo "$loglines"
+  new_start_time=$( get_next_start_time $start_time "$loglines" )
+  echo $new_start_time
+  if [[ "$start_time" == "$new_start_time" ]]; then
+    break;
+  fi
+  start_time=$new_start_time
+done
 

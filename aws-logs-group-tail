@@ -9,7 +9,9 @@ get_loglines() {
   aws $aws_cmd_opts --output text logs filter-log-events \
       --log-group-name "$1" \
       --interleaved \
-      --start-time $2
+      --start-time $2 \
+      --query "events[].{ Message:message }" \
+      --output table
 }
 
 # Usage: get_next_start_time <prev-start-time> "<loglines>"
