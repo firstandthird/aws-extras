@@ -1,0 +1,21 @@
+#!/bin/bash
+
+source $(dirname $0)/lib/prompt.sh
+aws s3 ls
+prompt "Bucket" "" "S3_BUCKET"
+
+file=/tmp/s3-cors-policy.json
+cat > $file <<- EOM
+{
+  "CORSRules": [
+    {
+      "AllowedHeaders": ["Authorization"],
+      "AllowedMethods": ["GET", "HEAD"],
+      "AllowedOrigins": ["*"],
+      "MaxAgeSeconds": 3000
+    }
+  ]
+}
+EOM
+
+aws s3api put-bucket-cors --bucket $S3_BUCKET --cors-configuration file://$file
