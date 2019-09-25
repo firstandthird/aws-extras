@@ -1,0 +1,40 @@
+#!/bin/bash
+
+DIR=$(dirname $0)
+source $DIR/lib/prompt.sh
+
+GROUP=$1
+MINS_AGO=$2
+FILTER=$3
+if [[ -z "$GROUP" ]]; then
+  aws-logs-groups
+  prompt "Group" "" "GROUP"
+fi
+if [[ -z "$MINS_AGO" ]]; then
+  prompt "Mins Ago" "5" "MINS_AGO"
+fi
+if [[ -z "$FILTER" ]]; then
+  prompt "Filter" "" "FILTER" true
+fi
+
+# Usage: get_loglines "<log-group-name>" <start-time>
+get_loglines() {
+  aws $aws_cmd_opts logs filter-log-events \
+      --log-group-name "$1" \
+      --interleaved \
+      ${3:+ --filter-pattern "${3}"} \
+      --start-time $2 \
+      --query "events[].{ Message:message }" \
+      --output text
+}
+
+KEY=""
+START_TIME=$(( ( $(date -u +"%s") - ($MINS_AGO * 60) ) * 1000 ))
+while [[ "$KEY" == "" ]]; do
+  CUR_DATE=$(date -d @$(($START_TIME / 1000)) )
+  echo -e "\e[33m Fetching logs since $CUR_DATE...\e[0m"
+  get_loglines $GROUP $START_TIME $FILTER
+  START_TIME=$(( ( $(date -u +"%s") - ($MINS_AGO * 60) ) * 1000 ))
+  echo -e "\e[33m Press enter key refresh, any other key to stop\e[0m"
+  read -s -n 1 KEY
+done
