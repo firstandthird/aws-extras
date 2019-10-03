@@ -1,0 +1,48 @@
+#!/bin/bash
+
+DIR=$(dirname $0)
+source $DIR/../lib/prompt.sh
+
+GROUP=$1
+MINS_AGO=$2
+FILTER=$3
+if [[ -z "$GROUP" ]]; then
+  aws-logs-groups
+  prompt "Group Filter" "" "GROUP"
+fi
+if [[ -z "$MINS_AGO" ]]; then
+  prompt "Mins Ago" "5" "MINS_AGO"
+fi
+if [[ -z "$FILTER" ]]; then
+  prompt "Filter" "" "FILTER" true
+fi
+
+# Usage: get_loglines "<log-group-name>" <start-time>
+get_loglines() {
+  aws $aws_cmd_opts logs filter-log-events \
+      --log-group-name "$1" \
+      --interleaved \
+      ${3:+ --filter-pattern "${3}"} \
+      --start-time $2 \
+      --query "events[].{ Message:message }" \
+      --output text
+}
+
+START_TIME=$(( ( $(date -u +"%s") - ($MINS_AGO * 60) ) * 1000 ))
+
+LOG_GROUPS=$(aws logs describe-log-groups \
+  --query "sort_by(logGroups[].{ Name:logGroupName }, &Name)" \
+  --output text)
+
+for log in $LOG_GROUPS; do
+  if [[ $log == *"$GROUP"* ]]; then
+    echo $log
+    aws $aws_cmd_opts logs filter-log-events \
+        --log-group-name "$log" \
+        --interleaved \
+        ${FILTER:+ --filter-pattern "${FILTER}"} \
+        --start-time $START_TIME \
+        --query "events[].{ Message:message }" \
+        --output text
+  fi
+done
