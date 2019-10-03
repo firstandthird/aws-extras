@@ -1,0 +1,19 @@
+#!/bin/bash
+
+BUCKETS=$(aws s3api list-buckets --query 'Buckets[*].[Name]' --output text)
+
+
+echo "Public Buckets:"
+for bucket in $BUCKETS; do
+  check=$(aws s3api get-bucket-policy-status --bucket $bucket --output text > /dev/null 2>&1)
+  if [[ "$?" == "0" ]]; then
+    echo $bucket
+  else
+    check2=$(aws s3api get-bucket-acl --bucket $bucket --query 'Grants[?Grantee.URI==`http://acs.amazonaws.com/groups/global/AllUsers` && Permission==`READ`]' --output text)
+    if [[ "$check2" ]]; then
+      echo $bucket
+    fi
+  fi
+
+done
+
