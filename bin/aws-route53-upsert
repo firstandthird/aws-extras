@@ -2,7 +2,7 @@
 
 
 DIR=$(dirname $0)
-source $DIR/lib/prompt.sh
+source $DIR/../lib/prompt.sh
 
 prompt "Domain" "" "DOMAIN"
 ZONEID=$($DIR/aws-route53-zone-id $DOMAIN)

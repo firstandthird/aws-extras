@@ -1,7 +1,7 @@
 #!/bin/bash
 
 DIR=$(dirname $0)
-source $DIR/lib/prompt.sh
+source $DIR/../lib/prompt.sh
 
 SERVER=$1
 shift

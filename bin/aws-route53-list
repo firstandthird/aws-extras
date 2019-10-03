@@ -4,7 +4,7 @@ DOMAIN=$1
 DIR=$(dirname $0)
 
 if [[ -z "$DOMAIN" ]]; then
-  source ${DIR}/lib/prompt.sh
+  source ${DIR}/../lib/prompt.sh
   prompt "Domain" "" "DOMAIN"
 fi
 

@@ -2,7 +2,7 @@
 
 
 DIR=$(dirname $0)
-source $DIR/lib/prompt.sh
+source $DIR/../lib/prompt.sh
 
 SERVERS_STR=$1
 shift

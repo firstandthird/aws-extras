@@ -4,7 +4,7 @@ DIR=$(dirname $0)
 
 bash $DIR/aws-keypair-list
 
-source $DIR/lib/prompt.sh
+source $DIR/../lib/prompt.sh
 
 prompt "Key Pair Name" "" "NAME"
 

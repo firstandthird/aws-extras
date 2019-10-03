@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source $(dirname $0)/lib/prompt.sh
+source $(dirname $0)/../lib/prompt.sh
 aws s3 ls
 prompt "Bucket" "" "S3_BUCKET"
 

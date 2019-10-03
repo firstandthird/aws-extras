@@ -3,7 +3,7 @@
 NAME=$1
 DIR=$(dirname $0)
 
-source $DIR/lib/prompt.sh
+source $DIR/../lib/prompt.sh
 
 bash $DIR/aws-ec2-list
 
