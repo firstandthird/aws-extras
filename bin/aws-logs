@@ -11,7 +11,7 @@ if [[ -z "$GROUP" ]]; then
   prompt "Group" "" "GROUP"
 fi
 if [[ -z "$MINS_AGO" ]]; then
-  prompt "Mins Ago" "5" "MINS_AGO"
+  prompt "Mins Ago (5hrs = 300, 1day = 1440)" "5" "MINS_AGO"
 fi
 if [[ -z "$FILTER" ]]; then
   prompt "Filter" "" "FILTER" true
