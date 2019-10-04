@@ -1,4 +1,5 @@
 prompt() {
+
   local question=$1
   local default=$2
   local var=$3
@@ -7,9 +8,7 @@ prompt() {
   if [[ -n "${!var}" ]]; then
     echo "$question: ${!var}"
   else
-    if [[ -t 0 ]]; then
-      eval "$var=$default"
-    else
+    if [[ -t 1 ]]; then
       echo "$question [${var}=${default}]:"
       read answer
       if [[ -z "$answer" ]]; then
@@ -21,6 +20,8 @@ prompt() {
       else
         eval "$var='$answer'"
       fi
+    else
+      eval "$var=$default"
     fi
   fi
 

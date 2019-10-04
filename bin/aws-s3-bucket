@@ -2,7 +2,10 @@
 
 source $(dirname $0)/../lib/prompt.sh
 
-prompt "User" "" "AWS_USER"
+prompt "Create User (y/n)" "y" "CREATE_USER"
+if [[ "$CREATE_USER" == "y" ]]; then
+  prompt "User" "" "AWS_USER"
+fi
 prompt "Bucket" "" "S3_BUCKET"
 prompt "Region" "us-east-1" "AWS_REGION"
 prompt "Web (y/n)" "n" "S3_WEB"
@@ -59,20 +62,9 @@ EOM
 
 bucket_website() {
   local bucket=$1
-
-  local file=/tmp/s3-website
-  cat > $file <<- EOM
-{
-    "IndexDocument": {
-        "Suffix": "index.html"
-    },
-    "ErrorDocument": {
-        "Key": "error.html"
-    }
-}
-EOM
   echo "making website bucket for $bucket"
-  aws s3api put-bucket-website --bucket $bucket --website-configuration file://$file
+  aws s3 website s3://$bucket/ --index-document index.html --error-document error.html
+  echo "Site url: http://$bucket.s3-website-$AWS_REGION.amazonaws.com/"
 }
 
 user_policy() {
@@ -131,5 +123,7 @@ if [[ "$web" == "y" ]]; then
   bucket_website $S3_BUCKET
 fi
 
-create_user $AWS_USER
-user_policy $AWS_USER $S3_BUCKET
+if [[ "$CREATE_USER" == "y" ]]; then
+  create_user $AWS_USER
+  user_policy $AWS_USER $S3_BUCKET
+fi
