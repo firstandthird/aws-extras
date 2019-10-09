@@ -1,0 +1,5 @@
+#!/bin/bash
+
+aws cloudformation describe-stacks \
+  --query 'sort_by(Stacks[].{ Name:StackName,Status:StackStatus }, &Name)' \
+  --output table
