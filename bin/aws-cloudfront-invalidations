@@ -1,0 +1,13 @@
+#!/bin/bash
+
+DIR=$(dirname $0)
+source $DIR/../lib/prompt.sh
+
+CF_DIST=$1
+if [[ -z "$CF_DIST" ]]; then
+  aws-cloudfront-list
+  prompt "Distribution Id" "" "CF_DIST"
+fi
+aws cloudfront list-invalidations --distribution-id $CF_DIST \
+  --query 'InvalidationList.Items[].{ Status:Status,ID:Id,CreatedTime:CreateTime}' \
+  --output table

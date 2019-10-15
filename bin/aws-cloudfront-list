@@ -1,5 +1,5 @@
 #!/bin/bash
 
 aws cloudfront list-distributions \
-  --query 'sort_by(DistributionList.Items[].{ Status:Status,Domain:DomainName,Aliases:Aliases.Items[] | [0],Origins:Origins.Items[].DomainName[] | [0] }, &Domain)' \
+  --query 'sort_by(DistributionList.Items[].{ Status:Status,ID:Id,Domain:DomainName,Aliases:Aliases.Items[] | [0],Origins:Origins.Items[].DomainName[] | [0] }, &Domain)' \
   --output table
