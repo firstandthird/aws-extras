@@ -1,0 +1,14 @@
+#!/bin/bash
+
+DIR=$(dirname $0)
+source $DIR/../lib/prompt.sh
+
+STACK=$1
+if [[ -z "$STACK" ]]; then
+  aws-cloudformation-list
+  prompt "Stack" "" "STACK"
+fi
+
+aws cloudformation delete-stack --stack-name $STACK
+
+
